@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TD to JPEG Converter</title>
+    <script src="src/html2canvas.min.js"></script>
+  </head>
+  <body>
+    <input
+      type="file"
+      id="fileInput"
+      accept=".html"
+    />
+    <div id="content"></div>
+
+    <script>
+      function downloadImage(element, index) {
+        html2canvas(element).then((canvas) => {
+          let link = document.createElement("a");
+          let paddedIndex = String(index).padStart(3, "0");
+          link.download = `cell-${paddedIndex}.jpg`;
+          link.href = canvas.toDataURL("image/jpeg", 1.0);
+          link.click();
+        });
+      }
+
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const content = document.getElementById("content");
+            content.innerHTML = e.target.result;
+
+            let index = 1;
+            content.querySelectorAll("td").forEach((td) => {
+              downloadImage(td, index++);
+            });
+          };
+          reader.readAsText(file);
+        });
+    </script>
+  </body>
+</html>
